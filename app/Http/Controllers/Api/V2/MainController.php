@@ -10,7 +10,7 @@ class MainController extends Controller
     public function status()
     {
         return response()->json([
-            'status' => 'API VERSION 2 is running'
+            'status' => 'API VERSION 2Version 2 -> API is running'
         ]);
     }
 }

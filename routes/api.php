@@ -9,3 +9,9 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v2')->group(function () {
     require base_path('routes/api_v2.php');
 });
+
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Endpoint not found.'
+    ], 404);
+});
