@@ -4,7 +4,7 @@ namespace App\Services;
 
 class ApiResponse
 {
-    public static function success(mixed $data, $message = 'Success', $code = 200)
+    public static function success($data, $message = 'Success', $code = 200)
     {
         return response()->json([
             'status' => 'success',
@@ -18,7 +18,7 @@ class ApiResponse
         return response()->json([
             'status' => 'error',
             'message' => $message,
-            'errors' => $errors,
-        ], $code);
+            'errors' => $errors
+        ], $code);       
     }
 }
