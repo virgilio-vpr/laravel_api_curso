@@ -4,7 +4,11 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\CorrelationIdMiddleware;
+use App\Http\Middleware\MaintenanceModeMiddleware;
+use App\Services\ApiResponse;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,9 +20,20 @@ return Application::configure(basePath: dirname(__DIR__))
 
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        
+
         $middleware->api(prepend: [
             CorrelationIdMiddleware::class    
+        ]);
+
+        // Check if API is in maintenance mode.
+        $middleware->api(prepend: [
+            MaintenanceModeMiddleware::class
+        ]);
+
+
+        // Rate limiting middleware using the default api rate limiter.
+        $middleware->api(prepend: [
+            ThrottleRequests::class.':api' // use the 'api' rate limiter defined in RouteServiceProvider
         ]);
     
     })
@@ -26,4 +41,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // custom exception for Rate Limiting
+        $exceptions->render(function (ThrottleRequestsException $e, $request){
+        return ApiResponse::error('Too many requests', 429);
+    });
+
     })->create();

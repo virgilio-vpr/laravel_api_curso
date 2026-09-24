@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    // Custom constants
+    'maintenance_mode' => env('API_MAINTENANCE_MODE', false),
+    'rate_limit' => env('API_RATE_LIMIT', 0),
+
 ];
