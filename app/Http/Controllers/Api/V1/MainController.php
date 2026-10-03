@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
@@ -61,6 +63,33 @@ class MainController extends Controller
         return ApiResponse::success([
             'movements' => MovementResource::collection($movements),
             'totalMovements' => $movements->count(),
+        ]);
+    }
+
+    public function getCategory($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return ApiResponse::error("Category with ID {$id} not found.", 404);
+        }
+
+        return ApiResponse::success([
+            'category' => new CategoryResource($category)
+        ]);
+
+    }
+
+    public function getProduct($id)
+    {
+        $product = Product::with('category')->find($id);
+
+        if (!$product) {
+            return ApiResponse::error("Product with ID {$id} not found.", 404);
+        }
+
+        return ApiResponse::success([
+            'product' => new ProductResource($product)
         ]);
     }
 }
